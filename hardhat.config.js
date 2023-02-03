@@ -24,4 +24,24 @@ module.exports = {
 			accounts: [PRIVATE_KEY],
 		},
 	},
+	namedAccounts: {
+		deployer: {
+			default: 0,
+		},
+		contestant1: {
+			default: 1,
+		},
+		contestant2: {
+			default: 2,
+		},
+	},
+	settings: {
+		optimizer: {
+			enabled: true,
+			runs: 200,
+		},
+	},
+	mocha: {
+		timeout: 500000, // 500 seconds.
+	},
 };

@@ -44,13 +44,9 @@ contract FilecoinInsurance is Ownable {
     );
 
     constructor(
-    //    uint256 _coverageAmount,
-    //    uint256 _periodicPremium,
        uint256 _durationBetweenPayments,
        uint256 _insuranceDuration
     ){
-        // coverageAmount=_coverageAmount;
-        // periodicPremium=_periodicPremium;
         minDurationBetweenPayments=_durationBetweenPayments;
         maxDurationBetweenPayments=minDurationBetweenPayments.add(5 days);
         insuranceDuration=_insuranceDuration;
@@ -157,18 +153,18 @@ contract FilecoinInsurance is Ownable {
      */
     modifier validPremiumPayment(address _issuee) {
         require(isRegisteredForInsurance(_issuee), "Not registered");
+        require(isInsuranceValid(_issuee), "Insurance expired");
         require(isInsurancePaymentTime(_issuee), "Premium payment time not reached");
         require(hasPaidAllPreviousPremiums(_issuee), "Previous premiums not paid");
-        require(isInsuranceValid(_issuee), "Insurance expired");
         _;
     }
-
 
     /**
      * @notice Pay premium
      * @dev Only valid storage provider can pay premium
      */
     function getPremium() public payable validPremiumPayment(msg.sender) {
+        require(msg.value==insuranceIssuees[msg.sender].regularPremiumAmount, "Incorrect premium amount");
 
         insuranceIssuees[msg.sender].timesPremiumPaid=insuranceIssuees[msg.sender].timesPremiumPaid.add(1);
         insuranceIssuees[msg.sender].timeOfLastPremiumPayment=block.timestamp;
@@ -177,27 +173,6 @@ contract FilecoinInsurance is Ownable {
     }
 
 
-    // function adjustInsuranceVariablesForFILPrice(
-    //     uint256 _coverageAmount,
-    //     uint256 _periodicPremium
-    // ) public onlyOwner {
+    
 
-    //     coverageAmount=_coverageAmount;
-    //     periodicPremium=_periodicPremium;
-
-    //     emit insuranceVariablesAdjusted(coverageAmount, periodicPremium, insuranceDuration, minDurationBetweenPayments, maxDurationBetweenPayments);
-    // }
-
-    // function adjustInsuranceVariablesForDuration(
-    //     uint256 _minDurationBetweenPayments,
-    //     uint256 _maxDurationBetweenPayments,
-    //     uint256 _insuranceDuration
-    // ) public onlyOwner {
-
-    //     minDurationBetweenPayments=_minDurationBetweenPayments;
-    //     maxDurationBetweenPayments=_maxDurationBetweenPayments;
-    //     insuranceDuration=_insuranceDuration;
-
-    //     emit insuranceVariablesAdjusted(coverageAmount, periodicPremium, insuranceDuration, minDurationBetweenPayments, maxDurationBetweenPayments);
-    // }
 }
