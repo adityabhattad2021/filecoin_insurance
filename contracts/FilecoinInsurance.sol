@@ -22,6 +22,7 @@ contract FilecoinInsurance is Ownable {
         uint256 premiumEndTime;
         uint256 timeOfLastPremiumPayment;
         uint256 timeOfClaim;
+        uint256 regularPremiumAmount;
         uint256 claimAmount;
         bool claimPaid;
     }
@@ -43,32 +44,49 @@ contract FilecoinInsurance is Ownable {
     );
 
     constructor(
-       uint256 _coverageAmount,
-       uint256 _periodicPremium,
+    //    uint256 _coverageAmount,
+    //    uint256 _periodicPremium,
        uint256 _durationBetweenPayments,
        uint256 _insuranceDuration
     ){
-        coverageAmount=_coverageAmount;
-        periodicPremium=_periodicPremium;
+        // coverageAmount=_coverageAmount;
+        // periodicPremium=_periodicPremium;
         minDurationBetweenPayments=_durationBetweenPayments;
         maxDurationBetweenPayments=minDurationBetweenPayments.add(5 days);
         insuranceDuration=_insuranceDuration;
     }
 
-    function registerStorageProvider(address storageProvider) public onlyOwner {
-        require(insuranceIssuees[msg.sender].isInsured==false, "Already registered");
-        insuranceIssuees[msg.sender].isInsured=true;
-        insuranceIssuees[msg.sender].payeeAddress=storageProvider;
-        insuranceIssuees[msg.sender].timesPremiumPaid=0;
-        insuranceIssuees[msg.sender].premiumStartTime=block.timestamp;
-        insuranceIssuees[msg.sender].premiumEndTime=block.timestamp.add(insuranceDuration);
-        insuranceIssuees[msg.sender].timeOfLastPremiumPayment=block.timestamp;
-        insuranceIssuees[msg.sender].timeOfClaim=0;
-        insuranceIssuees[msg.sender].claimAmount=0;
-        insuranceIssuees[msg.sender].claimPaid=false;
+/**
+ * @notice Register a storage provider for insurance
+ * @dev Only owner can register a storage provider
+ * @param storageProvider Address of the storage provider
+ * @param _periodicPremium Amount of premium to be paid
+ * @param _claimAmount Amount of claim to be paid
+ */
+    function registerStorageProvider(
+        address storageProvider,
+        uint256 _periodicPremium,
+        uint256 _claimAmount
+    ) public onlyOwner {
+        require(insuranceIssuees[storageProvider].isInsured==false, "Already registered");
+        insuranceIssuees[storageProvider].isInsured=true;
+        insuranceIssuees[storageProvider].payeeAddress=storageProvider;
+        insuranceIssuees[storageProvider].timesPremiumPaid=0;
+        insuranceIssuees[storageProvider].premiumStartTime=block.timestamp;
+        insuranceIssuees[storageProvider].premiumEndTime=block.timestamp.add(insuranceDuration);
+        insuranceIssuees[storageProvider].regularPremiumAmount=_periodicPremium;
+        insuranceIssuees[storageProvider].claimAmount=_claimAmount;
+        insuranceIssuees[storageProvider].timeOfLastPremiumPayment=block.timestamp;
+        insuranceIssuees[storageProvider].timeOfClaim=0;
+        insuranceIssuees[storageProvider].claimAmount=0;
+        insuranceIssuees[storageProvider].claimPaid=false;
     }
 
-
+/**
+ * @notice Check if the storage provider is eligible for insurance payment
+ * @dev internal function
+ * @param _issuee Address of the storage provider
+ */
     function isInsurancePaymentTime(address _issuee) internal view returns(bool) {
         uint256 timeOfLastPayment=insuranceIssuees[_issuee].timeOfLastPremiumPayment;
         uint256 currentTime=block.timestamp;
@@ -81,6 +99,12 @@ contract FilecoinInsurance is Ownable {
         }
     }
 
+    /**
+     * @notice Check if the storage provider has paid all previous premiums
+     * @dev internal function
+     * @param _issuee Address of the storage provider
+     * @return bool
+     */
     function hasPaidAllPreviousPremiums(address _issuee) internal view returns(bool) {
         uint timesPremiumPaid=insuranceIssuees[_issuee].timesPremiumPaid;
         uint256 insuranceStartTime=insuranceIssuees[_issuee].premiumStartTime;
@@ -96,7 +120,11 @@ contract FilecoinInsurance is Ownable {
         }
     }
 
-
+    /**
+     * @notice Check if the storage provider's insurance is valid
+     * @dev internal function
+     * @param _issuee Address of the storage provider
+     */
     function isInsuranceValid(address _issuee) internal view returns(bool) {
         uint256 currentTime=block.timestamp;
         uint256 insuranceEndTime=insuranceIssuees[_issuee].premiumEndTime;
@@ -108,6 +136,11 @@ contract FilecoinInsurance is Ownable {
         }
     }
 
+    /**
+     * @notice Check if the storage provider is registered for insurance
+     * @dev internal function
+     * @param _issuee Address of the storage provider
+     */
     function isRegisteredForInsurance(address _issuee) internal view returns(bool) {
         if(insuranceIssuees[_issuee].isInsured==true){
             return true;
@@ -117,6 +150,11 @@ contract FilecoinInsurance is Ownable {
         }
     }
 
+    /**
+     * @notice Check if the premium payment is valid
+     * @dev modifier
+     * @param _issuee Address of the storage provider
+     */
     modifier validPremiumPayment(address _issuee) {
         require(isRegisteredForInsurance(_issuee), "Not registered");
         require(isInsurancePaymentTime(_issuee), "Premium payment time not reached");
@@ -125,6 +163,11 @@ contract FilecoinInsurance is Ownable {
         _;
     }
 
+
+    /**
+     * @notice Pay premium
+     * @dev Only valid storage provider can pay premium
+     */
     function getPremium() public payable validPremiumPayment(msg.sender) {
 
         insuranceIssuees[msg.sender].timesPremiumPaid=insuranceIssuees[msg.sender].timesPremiumPaid.add(1);
@@ -134,27 +177,27 @@ contract FilecoinInsurance is Ownable {
     }
 
 
-    function adjustInsuranceVariablesForFILPrice(
-        uint256 _coverageAmount,
-        uint256 _periodicPremium
-    ) public onlyOwner {
+    // function adjustInsuranceVariablesForFILPrice(
+    //     uint256 _coverageAmount,
+    //     uint256 _periodicPremium
+    // ) public onlyOwner {
 
-        coverageAmount=_coverageAmount;
-        periodicPremium=_periodicPremium;
+    //     coverageAmount=_coverageAmount;
+    //     periodicPremium=_periodicPremium;
 
-        emit insuranceVariablesAdjusted(coverageAmount, periodicPremium, insuranceDuration, minDurationBetweenPayments, maxDurationBetweenPayments);
-    }
+    //     emit insuranceVariablesAdjusted(coverageAmount, periodicPremium, insuranceDuration, minDurationBetweenPayments, maxDurationBetweenPayments);
+    // }
 
-    function adjustInsuranceVariablesForDuration(
-        uint256 _minDurationBetweenPayments,
-        uint256 _maxDurationBetweenPayments,
-        uint256 _insuranceDuration
-    ) public onlyOwner {
+    // function adjustInsuranceVariablesForDuration(
+    //     uint256 _minDurationBetweenPayments,
+    //     uint256 _maxDurationBetweenPayments,
+    //     uint256 _insuranceDuration
+    // ) public onlyOwner {
 
-        minDurationBetweenPayments=_minDurationBetweenPayments;
-        maxDurationBetweenPayments=_maxDurationBetweenPayments;
-        insuranceDuration=_insuranceDuration;
+    //     minDurationBetweenPayments=_minDurationBetweenPayments;
+    //     maxDurationBetweenPayments=_maxDurationBetweenPayments;
+    //     insuranceDuration=_insuranceDuration;
 
-        emit insuranceVariablesAdjusted(coverageAmount, periodicPremium, insuranceDuration, minDurationBetweenPayments, maxDurationBetweenPayments);
-    }
+    //     emit insuranceVariablesAdjusted(coverageAmount, periodicPremium, insuranceDuration, minDurationBetweenPayments, maxDurationBetweenPayments);
+    // }
 }
