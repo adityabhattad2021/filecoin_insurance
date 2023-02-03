@@ -31,8 +31,8 @@ const {developmentChains}=require("../../helper-hardhat-config");
                 const insuranceContractConnectedToNotOwner=await insuranceContract.connect(allAccounts[1]);
                 await expect(insuranceContractConnectedToNotOwner.registerStorageProvider(
                     SP,
-                    "100000000000000000000",
-                    "10000000000000000000000"
+                    ethers.utils.parseEther("100"),
+                    ethers.utils.parseEther("10000")
                 )).to.be.reverted;
 
             })
@@ -40,8 +40,8 @@ const {developmentChains}=require("../../helper-hardhat-config");
                 const SP=(await getNamedAccounts()).account1;
                 const tx=await insuranceContract.registerStorageProvider(
                     SP,
-                    "100000000000000000000",
-                    "100000000000000000000000"
+                    ethers.utils.parseEther("100"),
+                    ethers.utils.parseEther("10000")
                 );
                 await tx.wait(1);
                 const storageProvider=await insuranceContract.getRegisteredStorageProvider(SP);
