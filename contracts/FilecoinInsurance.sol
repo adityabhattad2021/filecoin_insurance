@@ -21,7 +21,6 @@ contract FilecoinInsurance is Ownable {
         uint256 premiumStartTime;
         uint256 premiumEndTime;
         uint256 timeOfLastPremiumPayment;
-        uint256 timeOfClaim;
         uint256 regularPremiumAmount;
         uint256 claimAmount;
         bool claimPaid;
@@ -65,16 +64,21 @@ contract FilecoinInsurance is Ownable {
         uint256 _claimAmount
     ) public onlyOwner {
         require(insuranceIssuees[storageProvider].isInsured==false, "Already registered");
+
         insuranceIssuees[storageProvider].isInsured=true;
         insuranceIssuees[storageProvider].payeeAddress=storageProvider;
+
         insuranceIssuees[storageProvider].timesPremiumPaid=0;
         insuranceIssuees[storageProvider].premiumStartTime=block.timestamp;
+
         insuranceIssuees[storageProvider].premiumEndTime=block.timestamp.add(insuranceDuration);
+
         insuranceIssuees[storageProvider].regularPremiumAmount=_periodicPremium;
+
         insuranceIssuees[storageProvider].claimAmount=_claimAmount;
+
         insuranceIssuees[storageProvider].timeOfLastPremiumPayment=block.timestamp;
-        insuranceIssuees[storageProvider].timeOfClaim=0;
-        insuranceIssuees[storageProvider].claimAmount=0;
+
         insuranceIssuees[storageProvider].claimPaid=false;
     }
 
@@ -179,6 +183,10 @@ contract FilecoinInsurance is Ownable {
 
     function getInsuranceDuration() public view returns(uint256) {
         return insuranceDuration;
+    }
+
+    function getRegisteredStorageProvider(address _storageProvider) public view returns(insuranceIssuee memory){
+        return insuranceIssuees[_storageProvider];
     }
     
 

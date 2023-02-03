@@ -28,10 +28,10 @@ module.exports = {
 		deployer: {
 			default: 0,
 		},
-		contestant1: {
+		account1: {
 			default: 1,
 		},
-		contestant2: {
+		account2: {
 			default: 2,
 		},
 	},
