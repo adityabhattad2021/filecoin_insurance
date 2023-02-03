@@ -172,7 +172,14 @@ contract FilecoinInsurance is Ownable {
         emit PremiumPaid(msg.value, msg.sender, block.timestamp);
     }
 
+    // getter functions
+    function getDurationBetweenPayments() public view returns(uint256) {
+        return minDurationBetweenPayments;
+    }
 
+    function getInsuranceDuration() public view returns(uint256) {
+        return insuranceDuration;
+    }
     
 
 }
