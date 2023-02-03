@@ -45,7 +45,7 @@ const {developmentChains}=require("../../helper-hardhat-config");
                 );
                 await tx.wait(1);
                 const storageProvider=await insuranceContract.getRegisteredStorageProvider(SP);
-                console.log(storageProvider);
+                // console.log(storageProvider);
                 const isInsured=storageProvider.isInsured;
                 const payeeAddress=storageProvider.payeeAddress;
                 const timesPremiumPaid=storageProvider.timesPremiumPaid;
@@ -71,6 +71,85 @@ const {developmentChains}=require("../../helper-hardhat-config");
                 assert.equal(parseInt(claimAmount),"100000000000000000000000");
                 // claim amount paid is 0
                 assert.equal(claimAmountPaid,false);
+            })
+        })  
+        describe("Pay premium",function (){
+            it("throws an error if the storage provider is not registered",async function(){
+                const allAccounts = await ethers.getSigners();
+                const insuranceContractConnectedToNotOwner=await insuranceContract.connect(allAccounts[1]);
+                await expect(insuranceContractConnectedToNotOwner.getPremium(ethers.utils.parseEther("2"),{value:ethers.utils.parseEther("200")})).to.be.reverted;
+            })
+
+            it("throws an error if the premium amount is not equal to the regular premium amount",async function(){
+                const SP=(await getNamedAccounts()).account1;
+                const tx=await insuranceContract.registerStorageProvider(
+                    SP,
+                    ethers.utils.parseEther("100"),
+                    ethers.utils.parseEther("10000")
+                );
+                await tx.wait(1);
+                const allAccounts = await ethers.getSigners();
+                const signerSP= allAccounts[1];
+                const insuranceContractConnectedToSP=await insuranceContract.connect(signerSP);
+                await expect(insuranceContractConnectedToSP.getPremium(ethers.utils.parseEther("2"),{value:ethers.utils.parseEther("100")})).to.be.reverted;
+            })
+
+            it("throws error if premium payment time not reached",async function(){
+                const SP=(await getNamedAccounts()).account1;
+                const tx=await insuranceContract.registerStorageProvider(
+                    SP,
+                    ethers.utils.parseEther("100"),
+                    ethers.utils.parseEther("10000")
+                );
+                await tx.wait(1);
+                const allAccounts = await ethers.getSigners();
+                const signerSP= allAccounts[1];
+                const insuranceContractConnectedToSP=await insuranceContract.connect(signerSP);
+                await expect(insuranceContractConnectedToSP.getPremium(ethers.utils.parseEther("2"),{value:ethers.utils.parseEther("200")})).to.be.reverted;
+            })
+
+            it("throws error if previous premium payment not made",async function(){
+                const SP=(await getNamedAccounts()).account1;
+                const tx=await insuranceContract.registerStorageProvider(
+                    SP,
+                    ethers.utils.parseEther("100"),
+                    ethers.utils.parseEther("10000")
+                );
+                await tx.wait(1);
+                network.provider.send("evm_increaseTime", [2592000*2])
+                network.provider.send("evm_mine", []);
+                const allAccounts = await ethers.getSigners();
+                const signerSP= allAccounts[1];
+                const insuranceContractConnectedToSP=await insuranceContract.connect(signerSP);
+                await expect(insuranceContractConnectedToSP.getPremium(ethers.utils.parseEther("2"),{value:ethers.utils.parseEther("200")})).to.be.reverted;
+            })
+
+            it("get premium from storage provider",async function(){
+                const SP=(await getNamedAccounts()).account1;
+                const tx=await insuranceContract.registerStorageProvider(
+                    SP,
+                    ethers.utils.parseEther("100"),
+                    ethers.utils.parseEther("10000")
+                );
+                await tx.wait(1);
+              
+                network.provider.send("evm_increaseTime", [2592000])
+                network.provider.send("evm_mine", []);
+                const allAccounts = await ethers.getSigners();
+                const signerSP= allAccounts[1];
+                const insuranceContractConnectedToSP=await insuranceContract.connect(signerSP);
+                const tx2=await insuranceContractConnectedToSP.getPremium(ethers.utils.parseEther("2"),{value:ethers.utils.parseEther("200")});
+                await tx2.wait(1);
+
+                const storageProvider=await insuranceContract.getRegisteredStorageProvider(SP);
+
+                const timesPremiumPaid=storageProvider.timesPremiumPaid;
+                const timeOfLastPremiumPayment=storageProvider.timeOfLastPremiumPayment;
+                const claimAmountPaid=storageProvider.claimPaid;
+                assert.equal(parseInt(timesPremiumPaid),1);
+                // assert.equal(parseInt(timeOfLastPremiumPayment),Math.floor(Date.now()/1000),"Time of last premium paid do not match");
+                assert.equal(claimAmountPaid,false);
+
             })
         })
 

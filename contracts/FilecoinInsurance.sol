@@ -3,10 +3,9 @@ pragma solidity ^0.8.0;
 
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
-
-contract FilecoinInsurance is Ownable {    
-
+contract FilecoinInsurance is Ownable {
     using SafeMath for uint256;
     uint256 private coverageAmount;
     uint256 private periodicPremium;
@@ -14,13 +13,14 @@ contract FilecoinInsurance is Ownable {
     uint256 private minDurationBetweenPayments;
     uint256 private maxDurationBetweenPayments;
 
-    struct insuranceIssuee{
+    struct insuranceIssuee {
         bool isInsured;
         address payeeAddress;
         uint256 timesPremiumPaid;
         uint256 premiumStartTime;
         uint256 premiumEndTime;
         uint256 timeOfLastPremiumPayment;
+        // Amount of premium to be paid in dollars (in wei)
         uint256 regularPremiumAmount;
         uint256 claimAmount;
         bool claimPaid;
@@ -34,67 +34,89 @@ contract FilecoinInsurance is Ownable {
         uint256 indexed timeOfPayment
     );
 
-    event insuranceVariablesAdjusted(
+    event InsuranceVariablesAdjusted(
         uint256 indexed coverageAmount,
         uint256 indexed periodicPremium,
         uint256 indexed insuranceDuration,
-        uint256  minDurationBetweenPayments,
-        uint256  maxDurationBetweenPayments
+        uint256 minDurationBetweenPayments,
+        uint256 maxDurationBetweenPayments
     );
 
-    constructor(
-       uint256 _durationBetweenPayments,
-       uint256 _insuranceDuration
-    ){
-        minDurationBetweenPayments=_durationBetweenPayments;
-        maxDurationBetweenPayments=minDurationBetweenPayments.add(5 days);
-        insuranceDuration=_insuranceDuration;
+    event StorageProviderReistered(
+        address indexed storageProvider,
+        uint256 indexed periodicPremium,
+        uint256 indexed claimAmount
+    );
+
+    constructor(uint256 _durationBetweenPayments, uint256 _insuranceDuration) {
+        minDurationBetweenPayments = _durationBetweenPayments;
+        maxDurationBetweenPayments = minDurationBetweenPayments.add(5 days);
+        insuranceDuration = _insuranceDuration;
     }
 
-/**
- * @notice Register a storage provider for insurance
- * @dev Only owner can register a storage provider
- * @param storageProvider Address of the storage provider
- * @param _periodicPremium Amount of premium to be paid
- * @param _claimAmount Amount of claim to be paid
- */
+    /**
+     * @notice Register a storage provider for insurance
+     * @dev Only owner can register a storage provider
+     * @param storageProvider Address of the storage provider
+     * @param _periodicPremium Amount of premium to be paid
+     * @param _claimAmount Amount of claim to be paid
+     */
     function registerStorageProvider(
         address storageProvider,
         uint256 _periodicPremium,
         uint256 _claimAmount
     ) public onlyOwner {
-        require(insuranceIssuees[storageProvider].isInsured==false, "Already registered");
+        require(
+            insuranceIssuees[storageProvider].isInsured == false,
+            "Already registered"
+        );
 
-        insuranceIssuees[storageProvider].isInsured=true;
-        insuranceIssuees[storageProvider].payeeAddress=storageProvider;
+        insuranceIssuees[storageProvider].isInsured = true;
+        insuranceIssuees[storageProvider].payeeAddress = storageProvider;
 
-        insuranceIssuees[storageProvider].timesPremiumPaid=0;
-        insuranceIssuees[storageProvider].premiumStartTime=block.timestamp;
+        insuranceIssuees[storageProvider].timesPremiumPaid = 0;
+        insuranceIssuees[storageProvider].premiumStartTime = block.timestamp;
 
-        insuranceIssuees[storageProvider].premiumEndTime=block.timestamp.add(insuranceDuration);
+        insuranceIssuees[storageProvider].premiumEndTime = block.timestamp.add(
+            insuranceDuration
+        );
 
-        insuranceIssuees[storageProvider].regularPremiumAmount=_periodicPremium;
+        insuranceIssuees[storageProvider]
+            .regularPremiumAmount = _periodicPremium;
 
-        insuranceIssuees[storageProvider].claimAmount=_claimAmount;
+        insuranceIssuees[storageProvider].claimAmount = _claimAmount;
 
-        insuranceIssuees[storageProvider].timeOfLastPremiumPayment=block.timestamp;
+        insuranceIssuees[storageProvider].timeOfLastPremiumPayment = block
+            .timestamp;
 
-        insuranceIssuees[storageProvider].claimPaid=false;
+        insuranceIssuees[storageProvider].claimPaid = false;
+
+        emit StorageProviderReistered(
+            storageProvider,
+            _periodicPremium,
+            _claimAmount
+        );
     }
 
-/**
- * @notice Check if the storage provider is eligible for insurance payment
- * @dev internal function
- * @param _issuee Address of the storage provider
- */
-    function isInsurancePaymentTime(address _issuee) internal view returns(bool) {
-        uint256 timeOfLastPayment=insuranceIssuees[_issuee].timeOfLastPremiumPayment;
-        uint256 currentTime=block.timestamp;
-        uint256 timePassedSinceLastPayment=currentTime.sub(timeOfLastPayment);
-        if(timePassedSinceLastPayment>=minDurationBetweenPayments && timePassedSinceLastPayment<=maxDurationBetweenPayments){
+    /**
+     * @notice Check if the storage provider is eligible for insurance payment
+     * @dev internal function
+     * @param _issuee Address of the storage provider
+     */
+    function isInsurancePaymentTime(
+        address _issuee
+    ) internal view returns (bool) {
+        uint256 timeOfLastPayment = insuranceIssuees[_issuee]
+            .timeOfLastPremiumPayment;
+        uint256 currentTime = block.timestamp;
+        uint256 timePassedSinceLastPayment = currentTime.sub(timeOfLastPayment);
+
+        if (
+            timePassedSinceLastPayment >= minDurationBetweenPayments &&
+            timePassedSinceLastPayment <= maxDurationBetweenPayments
+        ) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -105,17 +127,21 @@ contract FilecoinInsurance is Ownable {
      * @param _issuee Address of the storage provider
      * @return bool
      */
-    function hasPaidAllPreviousPremiums(address _issuee) internal view returns(bool) {
-        uint timesPremiumPaid=insuranceIssuees[_issuee].timesPremiumPaid;
-        uint256 insuranceStartTime=insuranceIssuees[_issuee].premiumStartTime;
-        uint256 insuranceEndTime=insuranceIssuees[_issuee].premiumEndTime;  
-        uint256 minimumDurationBetweenPayments=minDurationBetweenPayments;
+    function hasPaidAllPreviousPremiums(
+        address _issuee
+    ) internal view returns (bool) {
+        uint timesPremiumPaid = insuranceIssuees[_issuee].timesPremiumPaid;
+        uint256 insuranceStartTime = insuranceIssuees[_issuee].premiumStartTime;
+        uint256 minimumDurationBetweenPayments = minDurationBetweenPayments;
         // Number of times premium should have been paid
-        uint256 timesPremiumShouldHaveBeenPaid=insuranceEndTime.sub(insuranceStartTime).div(minimumDurationBetweenPayments);
-        if(timesPremiumPaid==timesPremiumShouldHaveBeenPaid-1){
+        uint256 timesPremiumShouldHaveBeenPaid = block.timestamp
+            .sub(insuranceStartTime)
+            .div(minimumDurationBetweenPayments);
+
+
+        if (timesPremiumPaid == timesPremiumShouldHaveBeenPaid - 1) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -125,13 +151,14 @@ contract FilecoinInsurance is Ownable {
      * @dev internal function
      * @param _issuee Address of the storage provider
      */
-    function isInsuranceValid(address _issuee) internal view returns(bool) {
-        uint256 currentTime=block.timestamp;
-        uint256 insuranceEndTime=insuranceIssuees[_issuee].premiumEndTime;
-        if(currentTime<=insuranceEndTime){
+    function isInsuranceValid(address _issuee) internal view returns (bool) {
+        uint256 currentTime = block.timestamp;
+        uint256 insuranceEndTime = insuranceIssuees[_issuee].premiumEndTime;
+
+
+        if (currentTime < insuranceEndTime) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -141,13 +168,23 @@ contract FilecoinInsurance is Ownable {
      * @dev internal function
      * @param _issuee Address of the storage provider
      */
-    function isRegisteredForInsurance(address _issuee) internal view returns(bool) {
-        if(insuranceIssuees[_issuee].isInsured==true){
+    function isRegisteredForInsurance(
+        address _issuee
+    ) internal view returns (bool) {
+
+        if (insuranceIssuees[_issuee].isInsured == true) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
+    }
+
+    function calculatePayablePremium(
+        uint256 FILPrice
+    ) internal view returns (uint256) {
+        uint256 premium = insuranceIssuees[msg.sender].regularPremiumAmount;
+        uint256 payablePremium = premium.mul(FILPrice).div(10 ** 18);
+        return payablePremium;
     }
 
     /**
@@ -158,36 +195,48 @@ contract FilecoinInsurance is Ownable {
     modifier validPremiumPayment(address _issuee) {
         require(isRegisteredForInsurance(_issuee), "Not registered");
         require(isInsuranceValid(_issuee), "Insurance expired");
-        require(isInsurancePaymentTime(_issuee), "Premium payment time not reached");
-        require(hasPaidAllPreviousPremiums(_issuee), "Previous premiums not paid");
+        require(
+            isInsurancePaymentTime(_issuee),
+            "Premium payment time not reached"
+        );
+        require(
+            hasPaidAllPreviousPremiums(_issuee),
+            "Previous premiums not paid"
+        );
         _;
     }
 
     /**
      * @notice Pay premium
      * @dev Only valid storage provider can pay premium
+     * @param FILPrice Current FIL price
      */
-    function getPremium() public payable validPremiumPayment(msg.sender) {
-        require(msg.value==insuranceIssuees[msg.sender].regularPremiumAmount, "Incorrect premium amount");
+    function getPremium(
+        uint256 FILPrice
+    ) public payable validPremiumPayment(msg.sender) {
+        uint256 payablePremium = calculatePayablePremium(FILPrice);
+        require(msg.value == payablePremium, "Incorrect premium amount");
 
-        insuranceIssuees[msg.sender].timesPremiumPaid=insuranceIssuees[msg.sender].timesPremiumPaid.add(1);
-        insuranceIssuees[msg.sender].timeOfLastPremiumPayment=block.timestamp;
+        insuranceIssuees[msg.sender].timesPremiumPaid = insuranceIssuees[
+            msg.sender
+        ].timesPremiumPaid.add(1);
+        insuranceIssuees[msg.sender].timeOfLastPremiumPayment = block.timestamp;
 
         emit PremiumPaid(msg.value, msg.sender, block.timestamp);
     }
 
     // getter functions
-    function getDurationBetweenPayments() public view returns(uint256) {
+    function getDurationBetweenPayments() public view returns (uint256) {
         return minDurationBetweenPayments;
     }
 
-    function getInsuranceDuration() public view returns(uint256) {
+    function getInsuranceDuration() public view returns (uint256) {
         return insuranceDuration;
     }
 
-    function getRegisteredStorageProvider(address _storageProvider) public view returns(insuranceIssuee memory){
+    function getRegisteredStorageProvider(
+        address _storageProvider
+    ) public view returns (insuranceIssuee memory) {
         return insuranceIssuees[_storageProvider];
     }
-    
-
 }
