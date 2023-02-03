@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
+import "./Verifier.sol";
 
 contract FilecoinInsurance is Ownable {
     using SafeMath for uint256;
@@ -28,6 +28,17 @@ contract FilecoinInsurance is Ownable {
     mapping(address => insuranceIssuee) public insuranceIssuees;
 
     // Events
+    event ClaimRequested(
+        uint256 indexed claimAmount,
+        address indexed payeeAddress
+    );
+
+    event ClaimPaid(
+        uint256 indexed claimAmount,
+        address indexed payeeAddress,
+        uint256 indexed timeOfClaim
+    );
+
     event PremiumPaid(
         uint256 indexed paidAmount,
         address indexed payeeAddress,
@@ -61,11 +72,11 @@ contract FilecoinInsurance is Ownable {
      * @param _periodicPremium Amount of premium to be paid
      * @param _claimAmount Amount of claim to be paid
      */
-    function registerStorageProvider(
+    function _registerStorageProvider(
         address storageProvider,
         uint256 _periodicPremium,
         uint256 _claimAmount
-    ) public onlyOwner {
+    ) internal {
         require(
             insuranceIssuees[storageProvider].isInsured == false,
             "Already registered"
@@ -92,6 +103,19 @@ contract FilecoinInsurance is Ownable {
         insuranceIssuees[storageProvider].claimPaid = false;
 
         emit StorageProviderReistered(
+            storageProvider,
+            _periodicPremium,
+            _claimAmount
+        );
+    }
+
+    function registerStorageProvider(
+        address storageProvider,
+        uint256 _periodicPremium,
+        uint256 _claimAmount
+    ) external onlyOwner {
+        // TODO: get the premium and claim amount from the verifier
+        _registerStorageProvider(
             storageProvider,
             _periodicPremium,
             _claimAmount
@@ -134,10 +158,10 @@ contract FilecoinInsurance is Ownable {
         uint256 insuranceStartTime = insuranceIssuees[_issuee].premiumStartTime;
         uint256 minimumDurationBetweenPayments = minDurationBetweenPayments;
         // Number of times premium should have been paid
-        uint256 timesPremiumShouldHaveBeenPaid = block.timestamp
+        uint256 timesPremiumShouldHaveBeenPaid = block
+            .timestamp
             .sub(insuranceStartTime)
             .div(minimumDurationBetweenPayments);
-
 
         if (timesPremiumPaid == timesPremiumShouldHaveBeenPaid - 1) {
             return true;
@@ -155,7 +179,6 @@ contract FilecoinInsurance is Ownable {
         uint256 currentTime = block.timestamp;
         uint256 insuranceEndTime = insuranceIssuees[_issuee].premiumEndTime;
 
-
         if (currentTime < insuranceEndTime) {
             return true;
         } else {
@@ -171,7 +194,6 @@ contract FilecoinInsurance is Ownable {
     function isRegisteredForInsurance(
         address _issuee
     ) internal view returns (bool) {
-
         if (insuranceIssuees[_issuee].isInsured == true) {
             return true;
         } else {
@@ -206,6 +228,16 @@ contract FilecoinInsurance is Ownable {
         _;
     }
 
+    modifier requestForClaimValid(address _issuee) {
+        require(isRegisteredForInsurance(_issuee), "Not registered");
+        require(isInsuranceValid(_issuee), "Insurance expired");
+        require(
+            insuranceIssuees[_issuee].claimPaid == false,
+            "Claim already paid"
+        );
+        _;
+    }
+
     /**
      * @notice Pay premium
      * @dev Only valid storage provider can pay premium
@@ -224,6 +256,27 @@ contract FilecoinInsurance is Ownable {
 
         emit PremiumPaid(msg.value, msg.sender, block.timestamp);
     }
+
+    // TODO
+    // function raiseClaimRequest() public requestForClaimValid(msg.sender) {
+
+    //     // TODO: Add logic to check if the claim is valid
+
+    //     insuranceIssuees[msg.sender].claimPaid = true;
+    //     emit ClaimRequested(
+    //         insuranceIssuees[msg.sender].claimAmount,
+    //         msg.sender,
+    //     );
+    // }
+
+    // TODO
+    // function payClaim(address _issuee) public onlyOwner {
+    //     emit ClaimPaid(
+    //         insuranceIssuees[_issuee].claimAmount,
+    //         _issuee,
+    //         block.timestamp
+    //     );
+    // }
 
     // getter functions
     function getDurationBetweenPayments() public view returns (uint256) {
