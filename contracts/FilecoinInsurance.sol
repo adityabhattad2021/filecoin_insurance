@@ -68,36 +68,70 @@ contract FilecoinInsurance is Ownable {
         insuranceIssuees[msg.sender].claimPaid=false;
     }
 
-    function getPremium() public payable {
 
-        require(insuranceIssuees[msg.sender].isInsured, "Not registered");
+    function isInsurancePaymentTime(address _issuee) internal view returns(bool) {
+        uint256 timeOfLastPayment=insuranceIssuees[_issuee].timeOfLastPremiumPayment;
+        uint256 currentTime=block.timestamp;
+        uint256 timePassedSinceLastPayment=currentTime.sub(timeOfLastPayment);
+        if(timePassedSinceLastPayment>=minDurationBetweenPayments && timePassedSinceLastPayment<=maxDurationBetweenPayments){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
-        // Check for the latest premium value.
-        require(msg.value==periodicPremium, "Incorrect premium amount");
-        require(block.timestamp.sub(insuranceIssuees[msg.sender].timeOfLastPremiumPayment)>=minDurationBetweenPayments, "Premium paid too soon");
-        require(block.timestamp.sub(insuranceIssuees[msg.sender].timeOfLastPremiumPayment)<=maxDurationBetweenPayments, "Premium paid too late");
-        require(block.timestamp<=insuranceIssuees[msg.sender].premiumEndTime, "Insurance expired");
-
-        uint256 timesPremiumPaidToVerify=insuranceIssuees[msg.sender].timesPremiumPaid;
-        uint256 insuranceStartTime=insuranceIssuees[msg.sender].premiumStartTime;
-        uint256 insuranceEndTime=insuranceIssuees[msg.sender].premiumEndTime;
+    function hasPaidAllPreviousPremiums(address _issuee) internal view returns(bool) {
+        uint timesPremiumPaid=insuranceIssuees[_issuee].timesPremiumPaid;
+        uint256 insuranceStartTime=insuranceIssuees[_issuee].premiumStartTime;
+        uint256 insuranceEndTime=insuranceIssuees[_issuee].premiumEndTime;  
         uint256 minimumDurationBetweenPayments=minDurationBetweenPayments;
         // Number of times premium should have been paid
         uint256 timesPremiumShouldHaveBeenPaid=insuranceEndTime.sub(insuranceStartTime).div(minimumDurationBetweenPayments);
-        require(timesPremiumPaidToVerify==timesPremiumShouldHaveBeenPaid, "Any or some premiums were missed");
+        if(timesPremiumPaid==timesPremiumShouldHaveBeenPaid-1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+
+    function isInsuranceValid(address _issuee) internal view returns(bool) {
+        uint256 currentTime=block.timestamp;
+        uint256 insuranceEndTime=insuranceIssuees[_issuee].premiumEndTime;
+        if(currentTime<=insuranceEndTime){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    function isRegisteredForInsurance(address _issuee) internal view returns(bool) {
+        if(insuranceIssuees[_issuee].isInsured==true){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    modifier validPremiumPayment(address _issuee) {
+        require(isRegisteredForInsurance(_issuee), "Not registered");
+        require(isInsurancePaymentTime(_issuee), "Premium payment time not reached");
+        require(hasPaidAllPreviousPremiums(_issuee), "Previous premiums not paid");
+        require(isInsuranceValid(_issuee), "Insurance expired");
+        _;
+    }
+
+    function getPremium() public payable validPremiumPayment(msg.sender) {
 
         insuranceIssuees[msg.sender].timesPremiumPaid=insuranceIssuees[msg.sender].timesPremiumPaid.add(1);
         insuranceIssuees[msg.sender].timeOfLastPremiumPayment=block.timestamp;
 
         emit PremiumPaid(msg.value, msg.sender, block.timestamp);
     }
-
-
-    // TODO: Check the time for insurance payment.
-
-    // TODO: check if isuee is eligible to pay the premium.
-
-    // TODO: Number of premiums are not over paid as well as not under paid.
 
 
     function adjustInsuranceVariablesForFILPrice(
