@@ -9,6 +9,7 @@ interface IVerifier {
     function verifyMinorBenificiary() external returns (bool);
     function calculatePremium(address _minorAddress) external returns (uint256);
     function calculateClaimAmount(address _minorAddress) external returns (uint256);
+    function isClaimValid(address _minorAddress) external returns (bool);
 }
 
 
@@ -37,7 +38,7 @@ contract Verifier{
      */
     function calculatePremium(address _minorAddress) external view returns (uint256){
         // TODO : Add the logic to calculate the premium
-        return 100;
+        return 100000000000000000000;
     }
 
     /**
@@ -46,7 +47,7 @@ contract Verifier{
      */
     function calculateClaimAmount(address _minorAddress) external view returns (uint256){
         // TODO : Add the logic to calculate the claim amount
-        return 100;
+        return 10000000000000000000000;
     }
 
     /**
@@ -56,5 +57,10 @@ contract Verifier{
     function verifyMinorBenificiary() external view returns (bool){
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
         return queryAPI.confirmBenificiaryAddress();
+    }
+
+    function isClaimValid(address _minorAddress) external view returns (bool){
+        // TODO : Add the logic to verify the claim
+        return true;
     }
 }

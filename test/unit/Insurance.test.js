@@ -66,9 +66,9 @@ const {developmentChains}=require("../../helper-hardhat-config");
                 // times premium paid is 0
                 assert.equal(parseInt(timesPremiumPaid),0);
                 // regular premium amount is 100000000000000000000
-                assert.equal(parseInt(regularPremiumAmount),"100000000000000000000");
+                assert.equal(parseInt(regularPremiumAmount),parseInt(ethers.utils.parseEther("100")));
                 // claim amount is 10000000000000000000000
-                assert.equal(parseInt(claimAmount),"100000000000000000000000");
+                assert.equal(parseInt(claimAmount),parseInt(ethers.utils.parseEther("10000")));
                 // claim amount paid is 0
                 assert.equal(claimAmountPaid,false);
             })

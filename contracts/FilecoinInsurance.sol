@@ -12,6 +12,7 @@ contract FilecoinInsurance is Ownable {
     uint256 private insuranceDuration;
     uint256 private minDurationBetweenPayments;
     uint256 private maxDurationBetweenPayments;
+    address private verifierAddress;
 
     struct insuranceIssuee {
         bool isInsured;
@@ -59,10 +60,11 @@ contract FilecoinInsurance is Ownable {
         uint256 indexed claimAmount
     );
 
-    constructor(uint256 _durationBetweenPayments, uint256 _insuranceDuration) {
+    constructor(uint256 _durationBetweenPayments, uint256 _insuranceDuration,address _verifierAddress) {
         minDurationBetweenPayments = _durationBetweenPayments;
         maxDurationBetweenPayments = minDurationBetweenPayments.add(5 days);
         insuranceDuration = _insuranceDuration;
+        verifierAddress = _verifierAddress;
     }
 
     /**
@@ -110,13 +112,13 @@ contract FilecoinInsurance is Ownable {
     }
 
     function registerStorageProvider(
-        address storageProvider,
-        uint256 _periodicPremium,
-        uint256 _claimAmount
+        address _storageProvider
     ) external onlyOwner {
         // TODO: get the premium and claim amount from the verifier
+        uint256 _periodicPremium = IVerifier(verifierAddress).calculatePremium(_storageProvider);
+        uint256 _claimAmount = IVerifier(verifierAddress).calculateClaimAmount(_storageProvider);
         _registerStorageProvider(
-            storageProvider,
+            _storageProvider,
             _periodicPremium,
             _claimAmount
         );
@@ -257,26 +259,32 @@ contract FilecoinInsurance is Ownable {
         emit PremiumPaid(msg.value, msg.sender, block.timestamp);
     }
 
-    // TODO
-    // function raiseClaimRequest() public requestForClaimValid(msg.sender) {
+    function payClaim(address _issuee) public onlyOwner {
+        emit ClaimPaid(
+            insuranceIssuees[_issuee].claimAmount,
+            _issuee,
+            block.timestamp
+        );
+    }
 
-    //     // TODO: Add logic to check if the claim is valid
+    function raiseClaimRequest() public requestForClaimValid(msg.sender) {
 
-    //     insuranceIssuees[msg.sender].claimPaid = true;
-    //     emit ClaimRequested(
-    //         insuranceIssuees[msg.sender].claimAmount,
-    //         msg.sender,
-    //     );
-    // }
+        // Add logic to check if the claim is valid
+        bool isClaimValid = IVerifier(verifierAddress).isClaimValid(msg.sender);
 
-    // TODO
-    // function payClaim(address _issuee) public onlyOwner {
-    //     emit ClaimPaid(
-    //         insuranceIssuees[_issuee].claimAmount,
-    //         _issuee,
-    //         block.timestamp
-    //     );
-    // }
+
+        insuranceIssuees[msg.sender].claimPaid = true;
+        emit ClaimRequested(
+            insuranceIssuees[msg.sender].claimAmount,
+            msg.sender
+        );
+        if(isClaimValid) {
+            payClaim(msg.sender);
+        }
+
+    }
+
+
 
     // getter functions
     function getDurationBetweenPayments() public view returns (uint256) {
