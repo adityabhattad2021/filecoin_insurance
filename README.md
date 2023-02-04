@@ -1,13 +1,4 @@
-# Sample Hardhat Project
+# Filecoin Insurance Smart Contract
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+## Rough Flow of the Project
+![FLow1](https://user-images.githubusercontent.com/93488388/216699174-8c003d7f-9933-4994-826a-85554bfa0e4e.jpeg)
