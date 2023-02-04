@@ -48,7 +48,6 @@ yarn hardhat run scripts/payPremium.js --network localhost
 
 
  - Claim Insurance if valid
- - Start new round
 ```shell
 yarn hardhat node
 yarn hardhat run scripts/claim.js --network localhost
