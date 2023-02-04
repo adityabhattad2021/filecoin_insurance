@@ -4,8 +4,8 @@ async function main() {
 	const { deployer, account1 } = await getNamedAccounts();
 	const insuranceContract = await ethers.getContract("FilecoinInsurance");
 
-	console.log(`------Paying the premium to the storage provider------------`);
-	for (let i = 0; i < 1; i++) {
+	console.log(`------Paying the premium------------`);
+	for (let i = 0; i < 10; i++) {
 		network.provider.send("evm_increaseTime", [2592000]);
 		network.provider.send("evm_mine", []);
 		const allAccounts = await ethers.getSigners();
@@ -19,7 +19,7 @@ async function main() {
 		);
 		await tx2.wait(1);
 		console.log(
-			`------Successfully paid the premium to the storage provider------------`
+			`------Successfully paid the premium------------`
 		);
 	}
 }
