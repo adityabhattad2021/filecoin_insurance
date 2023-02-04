@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Verifier.sol";
 
+
 contract FilecoinInsurance is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
     uint256 private coverageAmount;
@@ -233,12 +234,14 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
      * @param _issuee Address of the storage provider
      */
     modifier validPremiumPayment(address _issuee) {
+
         require(isRegisteredForInsurance(_issuee), "Not registered");
         require(isInsuranceValid(_issuee), "Insurance expired");
         require(
             isInsurancePaymentTime(_issuee),
             "Premium payment time not reached"
         );
+        require(insuranceIssuees[_issuee].claimPaid == false, "Claim already paid");
         require(
             hasPaidAllPreviousPremiums(_issuee),
             "Previous premiums not paid"
@@ -264,6 +267,7 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
     function getPremium(
         uint256 FILPrice
     ) public payable validPremiumPayment(msg.sender) {
+
         uint256 payablePremium = calculatePayablePremium(FILPrice);
         require(msg.value == payablePremium, "Incorrect premium amount");
 
@@ -278,8 +282,9 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
 
 
     function raiseClaimRequest() public nonReentrant requestForClaimValid(msg.sender) {
-        require(insuranceIssuees[msg.sender].claimPaid==false, "Claim already paid");
+        
         bool isClaimValid = IVerifier(verifierAddress).isClaimValid(msg.sender);
+
         if (isClaimValid) {
             insuranceIssuees[msg.sender].claimPaid = true;
 
@@ -291,6 +296,7 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
                 msg.sender,
                 block.timestamp
             );
+
         } else {
             emit ClaimRejected(
                 insuranceIssuees[msg.sender].claimAmount,
@@ -313,4 +319,22 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
     ) public view returns (insuranceIssuee memory) {
         return insuranceIssuees[_storageProvider];
     }
+
+    function getPremiumAmount(address _storageProvider)
+        public
+        view
+        returns (uint256)
+    {
+        return insuranceIssuees[_storageProvider].regularPremiumAmount;
+    }
+
+
+    function getClaimAmount(address _storageProvider)
+        public
+        view
+        returns (uint256)
+    {
+        return insuranceIssuees[_storageProvider].claimAmount;
+    }
+
 }

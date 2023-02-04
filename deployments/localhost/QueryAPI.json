@@ -1,0 +1,291 @@
+{
+  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "confirmBenificiaryAddress",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "minerAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getMinerInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "minerAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "addressTotalBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "initialPledge",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lockedBlockRewards",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "activeSectors",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "faultySectors",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "recoveredSectors",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct QueryAPI.minerInfo",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "minerInfoMap",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "minerAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "addressTotalBalance",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "initialPledge",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lockedBlockRewards",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "activeSectors",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "faultySectors",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "recoveredSectors",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_minerAddress",
+          "type": "address"
+        }
+      ],
+      "name": "mockGenerateMinerInfo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x27bb476b81c908a6b157e0543de74507de6d3ccd24ad82429003713c5599a100",
+  "receipt": {
+    "to": null,
+    "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "contractAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "transactionIndex": 0,
+    "gasUsed": "452845",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x9c0bd55919d057710b4fe6959f907443c4de7378f55e5d0cef2af868e15bfc7b",
+    "transactionHash": "0x27bb476b81c908a6b157e0543de74507de6d3ccd24ad82429003713c5599a100",
+    "logs": [],
+    "blockNumber": 1,
+    "cumulativeGasUsed": "452845",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "2c57846b0fd0737906d595d73fbe749e",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"confirmBenificiaryAddress\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"minerAddress\",\"type\":\"address\"}],\"name\":\"getMinerInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"minerAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"addressTotalBalance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"initialPledge\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedBlockRewards\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"activeSectors\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"faultySectors\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"recoveredSectors\",\"type\":\"uint256\"}],\"internalType\":\"struct QueryAPI.minerInfo\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"minerInfoMap\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"minerAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"addressTotalBalance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"initialPledge\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedBlockRewards\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"activeSectors\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"faultySectors\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"recoveredSectors\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_minerAddress\",\"type\":\"address\"}],\"name\":\"mockGenerateMinerInfo\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"confirmBenificiaryAddress()\":{\"returns\":{\"_0\":\"bool\"}},\"getMinerInfo(address)\":{\"params\":{\"minerAddress\":\"address of the miner\"},\"returns\":{\"_0\":\"minerInfo\"}},\"mockGenerateMinerInfo(address)\":{\"params\":{\"_minerAddress\":\"address of the miner\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"confirmBenificiaryAddress()\":{\"notice\":\"Verifies the minor benificiary\"},\"getMinerInfo(address)\":{\"notice\":\"Gets the miner info\"},\"mockGenerateMinerInfo(address)\":{\"notice\":\"Mocks the miner info\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/mocks/QueryAPI.sol\":\"QueryAPI\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/mocks/QueryAPI.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\n\\n\\n\\ncontract QueryAPI{\\n    // Structure of data regarding the storage  provider.\\n\\n    // Mocking the data for now\\n    mapping(address => minerInfo) public minerInfoMap;\\n\\n    struct minerInfo{\\n        address minerAddress;\\n        uint addressTotalBalance;\\n        uint initialPledge;\\n        uint lockedBlockRewards;\\n        uint activeSectors;\\n        uint faultySectors;\\n        uint recoveredSectors;\\n    }\\n\\n    /**\\n     * @notice Verifies the minor benificiary\\n     * @return bool\\n     */\\n    function confirmBenificiaryAddress() external pure returns (bool){\\n        // this are hard coded values for testing purposes\\n        return true;\\n    }\\n\\n\\n    /**\\n     * @notice Mocks the miner info\\n     * @param _minerAddress address of the miner\\n     */\\n    function mockGenerateMinerInfo(address _minerAddress) external {\\n        minerInfoMap[_minerAddress].minerAddress = _minerAddress;\\n        minerInfoMap[_minerAddress].addressTotalBalance = 30091*(10**18);\\n        minerInfoMap[_minerAddress].initialPledge = 26521*(10**18);\\n        minerInfoMap[_minerAddress].lockedBlockRewards =  1908*(10**18);\\n        minerInfoMap[_minerAddress].activeSectors = 70220;\\n        minerInfoMap[_minerAddress].faultySectors = 0;\\n        minerInfoMap[_minerAddress].recoveredSectors = 0;\\n    }\\n\\n\\n    /**\\n     * @notice Gets the miner info\\n     * @param minerAddress address of the miner\\n     * @return minerInfo\\n     */\\n    function getMinerInfo(address minerAddress) external view returns (minerInfo memory){\\n        return minerInfoMap[minerAddress];\\n    }\\n\\n}\",\"keccak256\":\"0xe1b2f908b97f539d4e972a228dbbfeb93a4d82cf8d090145f94ad10f2e1feae3\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061073c806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80630b34d553146100515780634c7c81d814610081578063ab7cd32c1461009f578063b0381f51146100bb575b600080fd5b61006b60048036038101906100669190610545565b6100f1565b6040516100789190610628565b60405180910390f35b6100896101db565b604051610096919061065e565b60405180910390f35b6100b960048036038101906100b49190610545565b6101e4565b005b6100d560048036038101906100d09190610545565b61042d565b6040516100e89796959493929190610697565b60405180910390f35b6100f961048f565b6000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206040518060e00160405290816000820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200160018201548152602001600282015481526020016003820154815260200160048201548152602001600582015481526020016006820154815250509050919050565b60006001905090565b806000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555069065f3c834f0c974c00006000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206001018190555069059db4cf79b846c400006000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206002018190555068676ed1b2fb955000006000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600301819055506201124c6000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206004018190555060008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206005018190555060008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206006018190555050565b60006020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020154908060030154908060040154908060050154908060060154905087565b6040518060e00160405280600073ffffffffffffffffffffffffffffffffffffffff1681526020016000815260200160008152602001600081526020016000815260200160008152602001600081525090565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000610512826104e7565b9050919050565b61052281610507565b811461052d57600080fd5b50565b60008135905061053f81610519565b92915050565b60006020828403121561055b5761055a6104e2565b5b600061056984828501610530565b91505092915050565b61057b81610507565b82525050565b6000819050919050565b61059481610581565b82525050565b60e0820160008201516105b06000850182610572565b5060208201516105c3602085018261058b565b5060408201516105d6604085018261058b565b5060608201516105e9606085018261058b565b5060808201516105fc608085018261058b565b5060a082015161060f60a085018261058b565b5060c082015161062260c085018261058b565b50505050565b600060e08201905061063d600083018461059a565b92915050565b60008115159050919050565b61065881610643565b82525050565b6000602082019050610673600083018461064f565b92915050565b61068281610507565b82525050565b61069181610581565b82525050565b600060e0820190506106ac600083018a610679565b6106b96020830189610688565b6106c66040830188610688565b6106d36060830187610688565b6106e06080830186610688565b6106ed60a0830185610688565b6106fa60c0830184610688565b9897505050505050505056fea2646970667358221220a300acdf1181304a434fc61917901ba9c2c2cbbe52366f7de5094d5e90e57a3e64736f6c63430008110033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c80630b34d553146100515780634c7c81d814610081578063ab7cd32c1461009f578063b0381f51146100bb575b600080fd5b61006b60048036038101906100669190610545565b6100f1565b6040516100789190610628565b60405180910390f35b6100896101db565b604051610096919061065e565b60405180910390f35b6100b960048036038101906100b49190610545565b6101e4565b005b6100d560048036038101906100d09190610545565b61042d565b6040516100e89796959493929190610697565b60405180910390f35b6100f961048f565b6000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206040518060e00160405290816000820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200160018201548152602001600282015481526020016003820154815260200160048201548152602001600582015481526020016006820154815250509050919050565b60006001905090565b806000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555069065f3c834f0c974c00006000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206001018190555069059db4cf79b846c400006000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206002018190555068676ed1b2fb955000006000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600301819055506201124c6000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206004018190555060008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206005018190555060008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206006018190555050565b60006020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020154908060030154908060040154908060050154908060060154905087565b6040518060e00160405280600073ffffffffffffffffffffffffffffffffffffffff1681526020016000815260200160008152602001600081526020016000815260200160008152602001600081525090565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000610512826104e7565b9050919050565b61052281610507565b811461052d57600080fd5b50565b60008135905061053f81610519565b92915050565b60006020828403121561055b5761055a6104e2565b5b600061056984828501610530565b91505092915050565b61057b81610507565b82525050565b6000819050919050565b61059481610581565b82525050565b60e0820160008201516105b06000850182610572565b5060208201516105c3602085018261058b565b5060408201516105d6604085018261058b565b5060608201516105e9606085018261058b565b5060808201516105fc608085018261058b565b5060a082015161060f60a085018261058b565b5060c082015161062260c085018261058b565b50505050565b600060e08201905061063d600083018461059a565b92915050565b60008115159050919050565b61065881610643565b82525050565b6000602082019050610673600083018461064f565b92915050565b61068281610507565b82525050565b61069181610581565b82525050565b600060e0820190506106ac600083018a610679565b6106b96020830189610688565b6106c66040830188610688565b6106d36060830187610688565b6106e06080830186610688565b6106ed60a0830185610688565b6106fa60c0830184610688565b9897505050505050505056fea2646970667358221220a300acdf1181304a434fc61917901ba9c2c2cbbe52366f7de5094d5e90e57a3e64736f6c63430008110033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "confirmBenificiaryAddress()": {
+        "returns": {
+          "_0": "bool"
+        }
+      },
+      "getMinerInfo(address)": {
+        "params": {
+          "minerAddress": "address of the miner"
+        },
+        "returns": {
+          "_0": "minerInfo"
+        }
+      },
+      "mockGenerateMinerInfo(address)": {
+        "params": {
+          "_minerAddress": "address of the miner"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "confirmBenificiaryAddress()": {
+        "notice": "Verifies the minor benificiary"
+      },
+      "getMinerInfo(address)": {
+        "notice": "Gets the miner info"
+      },
+      "mockGenerateMinerInfo(address)": {
+        "notice": "Mocks the miner info"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 1149,
+        "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+        "label": "minerInfoMap",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_address,t_struct(minerInfo)1164_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_struct(minerInfo)1164_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct QueryAPI.minerInfo)",
+        "numberOfBytes": "32",
+        "value": "t_struct(minerInfo)1164_storage"
+      },
+      "t_struct(minerInfo)1164_storage": {
+        "encoding": "inplace",
+        "label": "struct QueryAPI.minerInfo",
+        "members": [
+          {
+            "astId": 1151,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "minerAddress",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 1153,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "addressTotalBalance",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1155,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "initialPledge",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1157,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "lockedBlockRewards",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1159,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "activeSectors",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1161,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "faultySectors",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1163,
+            "contract": "contracts/mocks/QueryAPI.sol:QueryAPI",
+            "label": "recoveredSectors",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "224"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
