@@ -1,7 +1,7 @@
 const { ethers, getNamedAccounts } = require("hardhat");
 
 async function main() {
-	const { deployer, account1 } = await getNamedAccounts();
+	const { account1 } = await getNamedAccounts();
 	const insuranceContract = await ethers.getContract("FilecoinInsurance");
 
 	console.log(
@@ -9,8 +9,6 @@ async function main() {
 	);
 	const tx = await insuranceContract.registerStorageProvider(
 		account1,
-		ethers.utils.parseEther("100"),
-		ethers.utils.parseEther("10000")
 	);
 	await tx.wait(1);
 	console.log(

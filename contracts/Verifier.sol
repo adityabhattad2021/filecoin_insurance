@@ -25,7 +25,7 @@ contract Verifier{
      * @notice Verifies the miner data
      * @return bool
      */
-    function verifyMinerData() external view returns (bool){
+    function verifyMinerData() internal view returns (bool){
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
         IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo(msg.sender);
         //   TODO : Add the logic to verify the miner data
@@ -38,7 +38,7 @@ contract Verifier{
      */
     function calculatePremium(address _minorAddress) external view returns (uint256){
         // TODO : Add the logic to calculate the premium
-        return 100000000000000000000;
+        return 100 ether;
     }
 
     /**
@@ -47,20 +47,22 @@ contract Verifier{
      */
     function calculateClaimAmount(address _minorAddress) external view returns (uint256){
         // TODO : Add the logic to calculate the claim amount
-        return 10000000000000000000000;
+        return 1000 ether;
     }
 
     /**
      * @notice Verifies the minor benificiary
      * @return bool
      */
-    function verifyMinorBenificiary() external view returns (bool){
+    function verifyMinorBenificiary() internal view returns (bool){
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
         return queryAPI.confirmBenificiaryAddress();
     }
 
     function isClaimValid(address _minorAddress) external view returns (bool){
         // TODO : Add the logic to verify the claim
-        return true;
+        bool isMinorBenificiary= verifyMinorBenificiary();
+        bool isMinerDataValid = verifyMinerData();
+        return isMinorBenificiary && isMinerDataValid;
     }
 }

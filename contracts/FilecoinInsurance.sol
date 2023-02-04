@@ -2,10 +2,11 @@
 pragma solidity ^0.8.0;
 
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Verifier.sol";
 
-contract FilecoinInsurance is Ownable {
+contract FilecoinInsurance is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
     uint256 private coverageAmount;
     uint256 private periodicPremium;
@@ -29,7 +30,7 @@ contract FilecoinInsurance is Ownable {
     mapping(address => insuranceIssuee) public insuranceIssuees;
 
     // Events
-    event ClaimRequested(
+    event ClaimRejected(
         uint256 indexed claimAmount,
         address indexed payeeAddress
     );
@@ -60,7 +61,18 @@ contract FilecoinInsurance is Ownable {
         uint256 indexed claimAmount
     );
 
-    constructor(uint256 _durationBetweenPayments, uint256 _insuranceDuration,address _verifierAddress) {
+    /**
+     * @notice Constructor for the contract
+     * @dev Sets the coverage amount, periodic premium and insurance duration
+     * @param _durationBetweenPayments Minimum duration between payments
+     * @param _insuranceDuration Duration of the insurance
+     * @param _verifierAddress Address of the verifier contract
+     */
+    constructor(
+        uint256 _durationBetweenPayments,
+        uint256 _insuranceDuration,
+        address _verifierAddress
+    ) {
         minDurationBetweenPayments = _durationBetweenPayments;
         maxDurationBetweenPayments = minDurationBetweenPayments.add(5 days);
         insuranceDuration = _insuranceDuration;
@@ -115,8 +127,12 @@ contract FilecoinInsurance is Ownable {
         address _storageProvider
     ) external onlyOwner {
         // TODO: get the premium and claim amount from the verifier
-        uint256 _periodicPremium = IVerifier(verifierAddress).calculatePremium(_storageProvider);
-        uint256 _claimAmount = IVerifier(verifierAddress).calculateClaimAmount(_storageProvider);
+        uint256 _periodicPremium = IVerifier(verifierAddress).calculatePremium(
+            _storageProvider
+        );
+        uint256 _claimAmount = IVerifier(verifierAddress).calculateClaimAmount(
+            _storageProvider
+        );
         _registerStorageProvider(
             _storageProvider,
             _periodicPremium,
@@ -259,32 +275,29 @@ contract FilecoinInsurance is Ownable {
         emit PremiumPaid(msg.value, msg.sender, block.timestamp);
     }
 
-    function payClaim(address _issuee) public onlyOwner {
-        emit ClaimPaid(
-            insuranceIssuees[_issuee].claimAmount,
-            _issuee,
-            block.timestamp
-        );
-    }
 
-    function raiseClaimRequest() public requestForClaimValid(msg.sender) {
 
-        // Add logic to check if the claim is valid
+    function raiseClaimRequest() public nonReentrant requestForClaimValid(msg.sender) {
+        require(insuranceIssuees[msg.sender].claimPaid==false, "Claim already paid");
         bool isClaimValid = IVerifier(verifierAddress).isClaimValid(msg.sender);
+        if (isClaimValid) {
+            insuranceIssuees[msg.sender].claimPaid = true;
 
+            (bool success, ) = payable(msg.sender).call{value: insuranceIssuees[msg.sender].claimAmount}("");
+            require(success, "Transfer failed.");
 
-        insuranceIssuees[msg.sender].claimPaid = true;
-        emit ClaimRequested(
-            insuranceIssuees[msg.sender].claimAmount,
-            msg.sender
-        );
-        if(isClaimValid) {
-            payClaim(msg.sender);
+            emit ClaimPaid(
+                insuranceIssuees[msg.sender].claimAmount,
+                msg.sender,
+                block.timestamp
+            );
+        } else {
+            emit ClaimRejected(
+                insuranceIssuees[msg.sender].claimAmount,
+                msg.sender
+            );
         }
-
     }
-
-
 
     // getter functions
     function getDurationBetweenPayments() public view returns (uint256) {

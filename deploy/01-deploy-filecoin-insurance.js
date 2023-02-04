@@ -10,6 +10,11 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 	const chainId = network.config.chainId;
 	console.log(`------ChainId is ${chainId}------------`);
 
+
+	// Deploy Mocks
+
+	// Deploy Verifier
+
 	// Duration between payments is 1 month in seconds
 	const durationBetweenPayments = 2592000; // 1 month in seconds
 	const inusranceDuration = 31104000;

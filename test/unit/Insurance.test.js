@@ -18,6 +18,7 @@ const {developmentChains}=require("../../helper-hardhat-config");
             it("Initializes the contract with the correct values", async function (){
                 const durationBetweenPayments = await insuranceContract.getDurationBetweenPayments();
                 const insuranceDuration = await insuranceContract.getInsuranceDuration();
+                
                 assert.equal(durationBetweenPayments,2592000);
                 assert.equal(insuranceDuration,31104000);
             });
