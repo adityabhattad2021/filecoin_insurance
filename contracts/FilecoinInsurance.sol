@@ -256,6 +256,12 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
             insuranceIssuees[_issuee].claimPaid == false,
             "Claim already paid"
         );
+        uint256 timePassed=block.timestamp.sub(insuranceIssuees[_issuee].premiumStartTime);
+        uint256 totolTime=insuranceIssuees[_issuee].premiumEndTime.sub(insuranceIssuees[_issuee].premiumStartTime);
+        require(
+            timePassed>=totolTime.mul(2).div(3),
+            "Minimun duration to claim insurance not reached"
+        );
         _;
     }
 
@@ -282,7 +288,7 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
 
 
     function raiseClaimRequest() public nonReentrant requestForClaimValid(msg.sender) {
-        
+
         bool isClaimValid = IVerifier(verifierAddress).isClaimValid(msg.sender);
 
         if (isClaimValid) {
