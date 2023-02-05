@@ -2,22 +2,19 @@
 pragma solidity ^0.8.0;
 
 
-
-
+// This mock QueryAPI is inspired by MinerAPI by Zondax AG.
 contract QueryAPI{
     // Structure of data regarding the storage  provider.
 
     // Mocking the data for now
-    mapping(address => minerInfo) public minerInfoMap;
+    mapping(string => minerInfo) public minerInfoMap;
 
     struct minerInfo{
-        address minerAddress;
-        uint addressTotalBalance;
+        string minerId;
+        uint availableBalance;
         uint initialPledge;
-        uint lockedBlockRewards;
-        uint activeSectors;
-        uint faultySectors;
-        uint recoveredSectors;
+        uint vestingFunds;
+        uint64 sector_size;
     }
 
     /**
@@ -32,26 +29,24 @@ contract QueryAPI{
 
     /**
      * @notice Mocks the miner info
-     * @param _minerAddress address of the miner
+     * @param _minorId address of the miner
      */
-    function mockGenerateMinerInfo(address _minerAddress) external {
-        minerInfoMap[_minerAddress].minerAddress = _minerAddress;
-        minerInfoMap[_minerAddress].addressTotalBalance = 30091*(10**18);
-        minerInfoMap[_minerAddress].initialPledge = 26521*(10**18);
-        minerInfoMap[_minerAddress].lockedBlockRewards =  1908*(10**18);
-        minerInfoMap[_minerAddress].activeSectors = 70220;
-        minerInfoMap[_minerAddress].faultySectors = 0;
-        minerInfoMap[_minerAddress].recoveredSectors = 0;
+    function mockGenerateMinerInfo(string memory _minorId) external {
+        minerInfoMap[_minorId].minerId = _minorId;
+        minerInfoMap[_minorId].availableBalance=1000;
+        minerInfoMap[_minorId].initialPledge = 50;
+        minerInfoMap[_minorId].vestingFunds =  35;
+        minerInfoMap[_minorId].sector_size=42;
     }
 
 
     /**
      * @notice Gets the miner info
-     * @param minerAddress address of the miner
+     * @param minerID address of the miner
      * @return minerInfo
      */
-    function getMinerInfo(address minerAddress) external view returns (minerInfo memory){
-        return minerInfoMap[minerAddress];
+    function getMinerInfo(string memory minerID) external view returns (minerInfo memory){
+        return minerInfoMap[minerID];
     }
 
 }

@@ -44,14 +44,16 @@ const { developmentChains } = require("../../helper-hardhat-config");
 						await insuranceContract.connect(allAccounts[1]);
 					await expect(
 						insuranceContractConnectedToNotOwner.registerStorageProvider(
-							SP
+							SP,
+							"f120312"
 						)
 					).to.be.reverted;
 				});
 				it("Register a storage provider", async function () {
 					const SP = (await getNamedAccounts()).account1;
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 					const storageProvider =
@@ -86,6 +88,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					await expect(
 						insuranceContractConnectedToNotOwner.getPremium(
 							ethers.utils.parseEther("2"),
+							"66",
 							{ value: ethers.utils.parseEther("200") }
 						)
 					).to.be.reverted;
@@ -94,7 +97,8 @@ const { developmentChains } = require("../../helper-hardhat-config");
 				it("throws an error if the premium amount is not equal to the regular premium amount", async function () {
 					const SP = (await getNamedAccounts()).account1;
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 					const allAccounts = await ethers.getSigners();
@@ -104,6 +108,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					await expect(
 						insuranceContractConnectedToSP.getPremium(
 							ethers.utils.parseEther("2"),
+							"66",
 							{ value: ethers.utils.parseEther("100") }
 						)
 					).to.be.reverted;
@@ -112,7 +117,8 @@ const { developmentChains } = require("../../helper-hardhat-config");
 				it("throws error if premium payment time not reached", async function () {
 					const SP = (await getNamedAccounts()).account1;
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 					const allAccounts = await ethers.getSigners();
@@ -122,6 +128,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					await expect(
 						insuranceContractConnectedToSP.getPremium(
 							ethers.utils.parseEther("2"),
+							"66",
 							{ value: ethers.utils.parseEther("200") }
 						)
 					).to.be.reverted;
@@ -130,7 +137,8 @@ const { developmentChains } = require("../../helper-hardhat-config");
 				it("throws error if previous premium payment not made", async function () {
 					const SP = (await getNamedAccounts()).account1;
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 					network.provider.send("evm_increaseTime", [2592000 * 2]);
@@ -142,6 +150,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					await expect(
 						insuranceContractConnectedToSP.getPremium(
 							ethers.utils.parseEther("2"),
+							"66",
 							{ value: ethers.utils.parseEther("200") }
 						)
 					).to.be.reverted;
@@ -151,14 +160,19 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					const SP = (await getNamedAccounts()).account1;
 
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 
 					network.provider.send("evm_increaseTime", [2592000]);
 					network.provider.send("evm_mine", []);
 					const regularPremiumAmount =
-						await insuranceContract.getPremiumAmount(SP);
+						await insuranceContract.calculatePayablePremium(
+							ethers.utils.parseEther("2"),
+							"66",
+							SP
+						);
 					const allAccounts = await ethers.getSigners();
 					const signerSP = allAccounts[1];
 					const insuranceContractConnectedToSP =
@@ -166,10 +180,9 @@ const { developmentChains } = require("../../helper-hardhat-config");
 
 					const tx2 = await insuranceContractConnectedToSP.getPremium(
 						ethers.utils.parseEther("2"),
+						"66",
 						{
-							value: (
-								parseInt(regularPremiumAmount) / 2
-							).toString(),
+							value: parseInt(regularPremiumAmount).toString(),
 						}
 					);
 					await tx2.wait(1);
@@ -199,7 +212,8 @@ const { developmentChains } = require("../../helper-hardhat-config");
 				it("throws an error if the insurance is expired", async function () {
 					const SP = (await getNamedAccounts()).account1;
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 					network.provider.send("evm_increaseTime", [2592000 * 13]);
@@ -215,7 +229,8 @@ const { developmentChains } = require("../../helper-hardhat-config");
 				it("pays the storage provider if the claim is valid", async function () {
 					const SP = (await getNamedAccounts()).account1;
 					const tx = await insuranceContract.registerStorageProvider(
-						SP
+						SP,
+						"f120312"
 					);
 					await tx.wait(1);
 
@@ -223,7 +238,11 @@ const { developmentChains } = require("../../helper-hardhat-config");
 						network.provider.send("evm_increaseTime", [2592000]);
 						network.provider.send("evm_mine", []);
 						const regularPremiumAmount =
-							await insuranceContract.getPremiumAmount(SP);
+							await insuranceContract.calculatePayablePremium(
+								ethers.utils.parseEther("2"),
+								"66",
+								SP
+							);
 						const allAccounts = await ethers.getSigners();
 						const signerSP = allAccounts[1];
 						const insuranceContractConnectedToSP =
@@ -232,16 +251,17 @@ const { developmentChains } = require("../../helper-hardhat-config");
 						const tx2 =
 							await insuranceContractConnectedToSP.getPremium(
 								ethers.utils.parseEther("2"),
+								"66",
 								{
-									value: (
-										parseInt(regularPremiumAmount) / 2
+									value: parseInt(
+										regularPremiumAmount
 									).toString(),
 								}
 							);
 						await tx2.wait(1);
 					}
 
-                    const balanceBefore = await ethers.provider.getBalance(SP);
+					const balanceBefore = await ethers.provider.getBalance(SP);
 					const allAccounts = await ethers.getSigners();
 					const signerSP = allAccounts[1];
 					const insuranceContractConnectedToSP =
@@ -256,11 +276,12 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					const claimAmountPaid = storageProvider.claimPaid;
 					assert.equal(claimAmountPaid, true);
 
-                    const balanceAfter = await ethers.provider.getBalance(SP);
+					const balanceAfter = await ethers.provider.getBalance(SP);
 
-
-                    assert.equal(parseInt(balanceAfter)>parseInt(balanceBefore),true);
-
+					assert.equal(
+						parseInt(balanceAfter) > parseInt(balanceBefore),
+						true
+					);
 				});
 			});
 	  });

@@ -5,6 +5,7 @@ import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Verifier.sol";
+import "hardhat/console.sol";
 
 
 contract FilecoinInsurance is Ownable, ReentrancyGuard {
@@ -125,18 +126,21 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
     }
 
     function registerStorageProvider(
-        address _storageProvider
+        address _storageProvider,
+        string memory _storageProviderID
     ) external onlyOwner {
         // TODO: get the premium and claim amount from the verifier
         uint256 _periodicPremium = IVerifier(verifierAddress).calculatePremium(
-            _storageProvider
+            _storageProviderID
         );
         uint256 _claimAmount = IVerifier(verifierAddress).calculateClaimAmount(
-            _storageProvider
+            _storageProviderID
         );
+        
         _registerStorageProvider(
             _storageProvider,
             _periodicPremium,
+
             _claimAmount
         );
     }
@@ -221,10 +225,13 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
     }
 
     function calculatePayablePremium(
-        uint256 FILPrice
-    ) internal view returns (uint256) {
-        uint256 premium = insuranceIssuees[msg.sender].regularPremiumAmount;
-        uint256 payablePremium = premium.mul(10 ** 18).div(FILPrice);
+        uint256 FILPrice,
+        uint256 _reputationScore,
+        address _SP
+    ) public view returns (uint256) {
+        uint256 reputationScore=_reputationScore.mul(10**18).div(100);
+        uint256 premium = insuranceIssuees[_SP].regularPremiumAmount;
+        uint256 payablePremium = premium.mul(10 ** 18).div(FILPrice).div(reputationScore).mul(10**18);
         return payablePremium;
     }
 
@@ -271,10 +278,11 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
      * @param FILPrice Current FIL price
      */
     function getPremium(
-        uint256 FILPrice
+        uint256 FILPrice,
+        uint256 reputationScore
     ) public payable validPremiumPayment(msg.sender) {
 
-        uint256 payablePremium = calculatePayablePremium(FILPrice);
+        uint256 payablePremium = calculatePayablePremium(FILPrice,reputationScore,msg.sender);
         require(msg.value == payablePremium, "Incorrect premium amount");
 
         insuranceIssuees[msg.sender].timesPremiumPaid = insuranceIssuees[
@@ -324,14 +332,6 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
         address _storageProvider
     ) public view returns (insuranceIssuee memory) {
         return insuranceIssuees[_storageProvider];
-    }
-
-    function getPremiumAmount(address _storageProvider)
-        public
-        view
-        returns (uint256)
-    {
-        return insuranceIssuees[_storageProvider].regularPremiumAmount;
     }
 
 

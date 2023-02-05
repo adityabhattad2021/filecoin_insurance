@@ -7,8 +7,8 @@ import "./mocks/InterfaceQueryAPI.sol";
 interface IVerifier {
     function verifyMinerData() external returns (bool);
     function verifyMinorBenificiary() external returns (bool);
-    function calculatePremium(address _minorAddress) external returns (uint256);
-    function calculateClaimAmount(address _minorAddress) external returns (uint256);
+    function calculatePremium(string memory _minorAddress) external returns (uint256);
+    function calculateClaimAmount(string memory _minorAddress) external returns (uint256);
     function isClaimValid(address _minorAddress) external returns (bool);
 }
 
@@ -27,7 +27,7 @@ contract Verifier{
      */
     function verifyMinerData() internal view returns (bool){
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
-        IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo(msg.sender);
+        IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo("akjsdksj");
         //   TODO : Add the logic to verify the miner data
         return true;
     }
@@ -36,7 +36,7 @@ contract Verifier{
      * @notice calculates the premium to be paid based on the miner data
      * @return bool
      */
-    function calculatePremium(address _minorAddress) external view returns (uint256){
+    function calculatePremium(string memory _minorID) external view returns (uint256){
         // TODO : Add the logic to calculate the premium
         return 100 ether;
     }
@@ -45,7 +45,7 @@ contract Verifier{
      * @notice calculates the claimAmount to be paid based on the miner data
      * @return bool
      */
-    function calculateClaimAmount(address _minorAddress) external view returns (uint256){
+    function calculateClaimAmount(string memory _minorID) external view returns (uint256){
         // TODO : Add the logic to calculate the claim amount
         return 100 ether;
     }
