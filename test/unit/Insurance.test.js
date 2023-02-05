@@ -168,7 +168,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 						ethers.utils.parseEther("2"),
 						{
 							value: (
-								parseInt(regularPremiumAmount) * 2
+								parseInt(regularPremiumAmount) / 2
 							).toString(),
 						}
 					);
@@ -234,7 +234,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 								ethers.utils.parseEther("2"),
 								{
 									value: (
-										parseInt(regularPremiumAmount) * 2
+										parseInt(regularPremiumAmount) / 2
 									).toString(),
 								}
 							);

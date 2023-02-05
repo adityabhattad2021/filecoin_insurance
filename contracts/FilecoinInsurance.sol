@@ -224,7 +224,7 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
         uint256 FILPrice
     ) internal view returns (uint256) {
         uint256 premium = insuranceIssuees[msg.sender].regularPremiumAmount;
-        uint256 payablePremium = premium.mul(FILPrice).div(10 ** 18);
+        uint256 payablePremium = premium.mul(10 ** 18).div(FILPrice);
         return payablePremium;
     }
 

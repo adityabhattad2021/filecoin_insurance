@@ -47,7 +47,7 @@ contract Verifier{
      */
     function calculateClaimAmount(address _minorAddress) external view returns (uint256){
         // TODO : Add the logic to calculate the claim amount
-        return 1000 ether;
+        return 100 ether;
     }
 
     /**
