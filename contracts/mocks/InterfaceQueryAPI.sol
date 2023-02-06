@@ -2,16 +2,13 @@
 pragma solidity ^0.8.0;
 
 interface IQueryAPI {
-    struct minerInfo {
-        string minorID;
-        uint addressTotalBalance;
+    struct minerInfo{
+        string minerId;
+        uint availableBalance;
         uint initialPledge;
-        uint lockedBlockRewards;
-        uint activeSectors;
-        uint faultySectors;
-        uint recoveredSectors;
+        uint vestingFunds;
+        uint64 sector_size;
     }
-
     function confirmBenificiaryAddress() external pure returns (bool);
 
     function getMinerInfo(

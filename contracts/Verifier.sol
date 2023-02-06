@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./mocks/InterfaceQueryAPI.sol";
 
 interface IVerifier {
@@ -15,6 +15,8 @@ interface IVerifier {
 
 contract Verifier{
 
+    using SafeMath for uint;
+
     address public queryAPIAddress;
     
     constructor(address _queryAPIAddress){
@@ -27,7 +29,7 @@ contract Verifier{
      */
     function verifyMinerData() internal view returns (bool){
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
-        IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo("akjsdksj");
+        IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo("f002112");
         //   TODO : Add the logic to verify the miner data
         return true;
     }
@@ -37,8 +39,11 @@ contract Verifier{
      * @return bool
      */
     function calculatePremium(string memory _minorID) external view returns (uint256){
-        // TODO : Add the logic to calculate the premium
-        return 100 ether;
+        uint basePremium = 100 ether;
+        IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
+        IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo(_minorID);
+        uint premium=basePremium.mul(minerInfo.sector_size).div(10**18);
+        return premium;
     }
 
     /**
@@ -46,8 +51,10 @@ contract Verifier{
      * @return bool
      */
     function calculateClaimAmount(string memory _minorID) external view returns (uint256){
-        // TODO : Add the logic to calculate the claim amount
-        return 100 ether;
+        IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
+        IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo(_minorID);
+        uint claimAmount= minerInfo.availableBalance.add(minerInfo.vestingFunds).add(minerInfo.initialPledge);
+        return claimAmount;
     }
 
     /**
@@ -65,4 +72,7 @@ contract Verifier{
         bool isMinerDataValid = verifyMinerData();
         return isMinorBenificiary && isMinerDataValid;
     }
+
+
+
 }
