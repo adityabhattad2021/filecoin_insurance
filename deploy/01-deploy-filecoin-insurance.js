@@ -4,8 +4,8 @@ const {
 	developmentChains,
 } = require("../helper-hardhat-config");
 require("dotenv").config();
-const util = require("util")
-const request = util.promisify(require("request"))
+const util = require("util");
+const request = util.promisify(require("request"));
 require("hardhat-deploy");
 require("hardhat-deploy-ethers");
 
@@ -62,7 +62,6 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 			"-------------------Successfully Deployed Mocks-------------------------"
 		);
 
-		console.log(mockQueryAPI.address);
 
 		argsForVerifier = [mockQueryAPI.address];
 		// Deploy Verifier\
@@ -99,54 +98,55 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 		log(
 			"-------------------Successfully Deployed Filecoin Insurance Contract-------------------------"
 		);
+	} else {
+		log("-------------------Deploying Mocks-------------------------");
+		const mockQueryAPI = await deployLogError("QueryAPI", {
+			from: deployer,
+			log: true,
+			args: [],
+			maxPriorityFeePerGas: priorityFee,
+		});
+		log(
+			"-------------------Successfully Deployed Mocks-------------------------"
+		);
+
+		console.log(mockQueryAPI.address);
+
+		argsForVerifier = [mockQueryAPI.address];
+		// Deploy Verifier\
+		log("-------------------Deploying Verifier-------------------------");
+		const verifier = await deployLogError("Verifier", {
+			from: deployer,
+			log: true,
+			args: argsForVerifier,
+			maxPriorityFeePerGas: priorityFee,
+		});
+		log(
+			"-------------------Successfully Deployed Verifier-------------------------"
+		);
+
+		// Duration between payments is 1 month in seconds
+		const durationBetweenPayments = 2592000; // 1 month in seconds
+		const inusranceDuration = 31104000;
+		const argsForInsurance = [
+			durationBetweenPayments,
+			inusranceDuration,
+			verifier.address,
+		];
+
+		log(
+			"-------------------Deploying Filecoin Insurance Contract-------------------------"
+		);
+		await deployLogError("FilecoinInsurance", {
+			from: deployer,
+			args: argsForInsurance,
+			log: true,
+			maxPriorityFeePerGas: priorityFee,
+		});
+		log(
+			"-------------------Successfully Deployed Filecoin Insurance Contract-------------------------"
+		);
 	}
-	log("-------------------Deploying Mocks-------------------------");
-	const mockQueryAPI = await deployLogError("QueryAPI", {
-		from: deployer,
-		log: true,
-		args:[],
-		maxPriorityFeePerGas: priorityFee,
-	});
-	log(
-		"-------------------Successfully Deployed Mocks-------------------------"
-	);
-
-	console.log(mockQueryAPI.address);
-
-	argsForVerifier = [mockQueryAPI.address];
-	// Deploy Verifier\
-	log("-------------------Deploying Verifier-------------------------");
-	const verifier = await deployLogError("Verifier", {
-		from: deployer,
-		log: true,
-		args: argsForVerifier,
-		maxPriorityFeePerGas: priorityFee,
-	});
-	log(
-		"-------------------Successfully Deployed Verifier-------------------------"
-	);
-
-	// Duration between payments is 1 month in seconds
-	const durationBetweenPayments = 2592000; // 1 month in seconds
-	const inusranceDuration = 31104000;
-	const argsForInsurance = [
-		durationBetweenPayments,
-		inusranceDuration,
-		verifier.address,
-	];
-
-	log(
-		"-------------------Deploying Filecoin Insurance Contract-------------------------"
-	);
-	await deployLogError("FilecoinInsurance", {
-		from: deployer,
-		args: argsForInsurance,
-		log: true,
-		maxPriorityFeePerGas: priorityFee,
-	});
-	log(
-		"-------------------Successfully Deployed Filecoin Insurance Contract-------------------------"
-	);
 };
 
 module.exports.tags = ["all", "FilecoinInsurance"];

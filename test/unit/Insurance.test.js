@@ -22,6 +22,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					"QueryAPI",
 					deployer
 				);
+				queryMockContract.mockGenerateMinerInfo("f120312");
 			});
 
 			describe("Constructor", function () {
@@ -277,7 +278,7 @@ const { developmentChains } = require("../../helper-hardhat-config");
 					assert.equal(claimAmountPaid, true);
 
 					const balanceAfter = await ethers.provider.getBalance(SP);
-
+					console.log(parseInt(balanceBefore), parseInt(balanceAfter));
 					assert.equal(
 						parseInt(balanceAfter) > parseInt(balanceBefore),
 						true

@@ -36,7 +36,7 @@ contract QueryAPI{
         minerInfoMap[_minorId].availableBalance=1000;
         minerInfoMap[_minorId].initialPledge = 50;
         minerInfoMap[_minorId].vestingFunds =  35;
-        minerInfoMap[_minorId].sector_size=42;
+        minerInfoMap[_minorId].sector_size=10;
     }
 
 

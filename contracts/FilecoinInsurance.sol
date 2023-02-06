@@ -5,7 +5,6 @@ import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Verifier.sol";
-import "hardhat/console.sol";
 
 
 contract FilecoinInsurance is Ownable, ReentrancyGuard {
@@ -140,7 +139,6 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
         _registerStorageProvider(
             _storageProvider,
             _periodicPremium,
-
             _claimAmount
         );
     }
@@ -301,7 +299,6 @@ contract FilecoinInsurance is Ownable, ReentrancyGuard {
 
         if (isClaimValid) {
             insuranceIssuees[msg.sender].claimPaid = true;
-
             (bool success, ) = payable(msg.sender).call{value: insuranceIssuees[msg.sender].claimAmount}("");
             require(success, "Transfer failed.");
 

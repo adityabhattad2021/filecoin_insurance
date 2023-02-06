@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./mocks/InterfaceQueryAPI.sol";
 
+
 interface IVerifier {
     function verifyMinerData() external returns (bool);
     function verifyMinorBenificiary() external returns (bool);
@@ -36,24 +37,27 @@ contract Verifier{
 
     /**
      * @notice calculates the premium to be paid based on the miner data
-     * @return bool
+     * @return uint256
      */
     function calculatePremium(string memory _minorID) external view returns (uint256){
+        // This is just a mock value for testing purposes
         uint basePremium = 100 ether;
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
         IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo(_minorID);
-        uint premium=basePremium.mul(minerInfo.sector_size).div(10**18);
+        uint premium=basePremium.mul(minerInfo.sector_size);
         return premium;
     }
 
     /**
      * @notice calculates the claimAmount to be paid based on the miner data
-     * @return bool
+     * @return uint256
      */
     function calculateClaimAmount(string memory _minorID) external view returns (uint256){
+        // This is just a mock value for testing purposes
+        uint baseClaim = 100 ether;
         IQueryAPI queryAPI = IQueryAPI(queryAPIAddress);
         IQueryAPI.minerInfo memory minerInfo = queryAPI.getMinerInfo(_minorID);
-        uint claimAmount= minerInfo.availableBalance.add(minerInfo.vestingFunds).add(minerInfo.initialPledge);
+        uint claimAmount= baseClaim.add(minerInfo.vestingFunds).add(minerInfo.initialPledge);
         return claimAmount;
     }
 
